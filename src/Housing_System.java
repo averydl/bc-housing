@@ -8,21 +8,21 @@ public class Housing_System {
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		Connection conn = null;
-		
-		// run general "hello" menu	
+
+		// run general "hello" menu
 		int userType = mainManuSelection(in);
-		
+
 //		//clear console
-//		System.out.flush(); 
-		
+//		System.out.flush();
+
 		//if user wants to close session
 		if(userType == 3){
 			System.out.println("Thank you for using our service!");
 		}
 		else{
-			
+
 			try {
-				
+
 				//login to connect with db
 				conn = openConnection();
 				if (createUserConnection(in, conn) == false){
@@ -30,11 +30,11 @@ public class Housing_System {
 					System.out.println();
 					userType = mainManuSelection(in); //go to the cycle
 				}
-				
+
 			}
 			catch(SQLException | ClassNotFoundException ex) {
 				System.out.println(ex);
-			} 
+			}
 			finally {
 				if (conn != null) {
 					try {
@@ -48,7 +48,7 @@ public class Housing_System {
 
 	public static int mainManuSelection(Scanner in) {
 		boolean validSelect = false;
-		
+
 		System.out.println("****************************************************************************************");
 		System.out.println("                        Welcome to the Housing System");
 		System.out.println("****************************************************************************************");
@@ -56,16 +56,16 @@ public class Housing_System {
 		System.out.println("                      	        2. Admin");
 		System.out.println("                                3. Quit");
 		System.out.println();
-		
+
 		int select = 0;
-		
+
 		while (validSelect == false){
 			System.out.println("Type in your option:");
 			try{
 				select = in.nextInt();
 			}catch(InputMismatchException e){
 				select = 0;
-			}			
+			}
 			if (select > 0 & select < 4) {
 				validSelect = true;
 			}
@@ -81,7 +81,7 @@ public class Housing_System {
 	public static boolean createUserConnection(Scanner in, Connection conn) throws SQLException {
 		int id = 0;
 		String password = "";
-		
+
 		System.out.println("Enter ID: ");
 		try{
 			id = in.nextInt();
@@ -90,7 +90,7 @@ public class Housing_System {
 		}
 		System.out.println("Enter password: ");
 		password = in.next();
-		
+
 		//maybe go to procedure**************************************************************
 		String query = "SELECT * FROM personVerification WHERE bc_id = ? AND password = ?";
 		PreparedStatement st = conn.prepareStatement(query);
@@ -98,19 +98,60 @@ public class Housing_System {
 		st.setInt(1,id);
 		st.setString(2,password);
 		ResultSet result = st.executeQuery();
-		
+
 		return result.next();
-		
+
 	}
 
 	private static Connection openConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		String url = "jdbc:mysql://localhost:3306/BCHousing?serverTimezone=UTC&useSSL=TRUE";
-		
+
 		//hurdcode to create connection to VM DB
 		Connection conn = DriverManager.getConnection(url, "student", "password");
-		
+
 		return conn;
 	}
 
+	public static void adminMenuSelection(Scanner in, Connection conn) throws SQLException {
+		while(true) {
+			System.out.println("****************************************************************************************");
+			System.out.println("                       Welcome to the Bellevue College Housing");
+			System.out.println("				    Administrator Menu");
+			System.out.println("****************************************************************************************");
+			System.out.println("                                1. Manage Residents");
+			System.out.println("                      	    2. Manage Applicants");
+			System.out.println("                                3. Demographic Studies");
+			System.out.println("                                4. Manage Maintenance Orders");
+			System.out.println("                                5. Administrative Reports");
+			System.out.println("                                6. Quit");
+			System.out.println();
+
+			// store user input
+			int option;
+			try {
+				option = in.nextInt();
+				switch(option) {
+					case 1: System.out.println("This feature is not yet available");
+						break;
+					case 2: System.out.println("This feature is not yet available");
+						break;
+					case 3: System.out.println("This feature is not yet available");
+						break;
+					case 4: maintenanceReportQuery();
+						break;
+					case 5: System.out.println("This feature is not yet available");
+						break;
+					case 6: return;
+					default: System.out.println("Invalid input");
+				}
+			} catch (Exception e) {
+				System.out.println("Invalid input");
+			}
+		}
+	}
+	
+	public static void maintenanceReportQuery() {
+		System.out.println("TEST - Query Results");
+	}
 }
