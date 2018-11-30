@@ -1,7 +1,7 @@
 CREATE TABLE person (
   bc_id    integer(9) primary key,
   ssn      char(9) unique not null,
-  fname    varchar(15) not null, 
+  fname    varchar(15) not null,
   minit    varchar(1),
   lname    varchar(15) not null,
   address  varchar(50),
@@ -14,7 +14,7 @@ alter table person add constraint sex check (sex in ('F', 'M'));
 CREATE TABLE admin (
   staff_id    integer(9) primary key,
   department  varchar(25),
-  job_title   varchar(25), 
+  job_title   varchar(25),
   foreign key (staff_id) references person(bc_id) on delete cascade
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE personVerification (
 
 CREATE TABLE student (
   sid      integer(9) primary key,
-  department varchar(50), 
+  department varchar(50),
   college    varchar(50),
   isMarried  bool,
   grad_date  date,
@@ -48,18 +48,20 @@ CREATE TABLE bed_type (
 alter table bed_type add constraint unit_type check (unit_type in ('A', 'S'));
 
 CREATE TABLE application(
-  appl_num  integer(9) primary key auto_increment,
-  sid       integer(9) not null,
-  appl_date date,
-  start_quarter varchar(1) not null,
-  end_quarter varchar (1) not null,
-  pref_sid  integer(9),
+  appl_num       integer(9) primary key auto_increment,
+  sid            integer(9) not null,
+  appl_date      date,
+  start_quarter  varchar(1) not null,
+  end_quarter    varchar (1) not null,
+  pref_sid       integer(9),
+  status         varchar(1),
   foreign key (sid) references student(sid) on delete cascade,
   foreign key (pref_sid) references student(sid) on delete cascade
 );
 
 alter table application add constraint start_quarter check (start_quarter in ('F', 'W', 'S'));
 alter table application add constraint end_quarter check (end_quarter in ('F', 'W', 'S'));
+alter table application add constraint Status check (status in ('A', 'C', 'L', 'P'));
 -- alter table application add constraint pref_sid check (pref_sid != sid);    logic to java
 
 CREATE TABLE application_preference(
@@ -141,7 +143,7 @@ INSERT INTO student VALUES(888888888,"Computer Science","Engineering",false,'196
 INSERT INTO student VALUES(999999999,"Architecture","Arts and Sciences",false,'2020-06-15');
 INSERT INTO student VALUES(100000000,"Aeronautics","Engineering",false,'1937-07-02');
 
--- Additional students 
+-- Additional students
 
 INSERT INTO student VALUES(110000000,"Dragons","Arts and Sciences",false,'2019-06-15');
 INSERT INTO student VALUES(120000000,"Swords","Engineering",false,'2023-06-15');
@@ -149,6 +151,7 @@ INSERT INTO student VALUES(130000000,"Fletching","Engineering",false,'2022-06-15
 INSERT INTO student VALUES(140000000,"PeaceKeeper","Arts and Sciences",false,'2018-06-15');
 INSERT INTO student VALUES(150000000,"General","Engineering",false,'2020-04-15');
 INSERT INTO student VALUES(160000000,"Mooching","Engineering",true,'2011-03-15');
+INSERT INTO student VALUES(555555555,"Computer Science", "Engineering", false,'2019-06-15');
 
 
 INSERT INTO bed_type VALUES(1,"s",true,true,true,4667,"One Bedroom Suite, One Person");
@@ -200,7 +203,7 @@ INSERT INTO bed VALUES(4,140,400,"3000 Landerholm Cir SE",'a',6);  -- 2b 4p aval
 
 INSERT INTO bed VALUES(1,230,400,"3000 Landerholm Cir SE",'f',7);  -- 2b 4p f SID 130000000
 INSERT INTO bed VALUES(2,230,400,"3000 Landerholm Cir SE",'a',7);  -- 2b 4p aval   same room
-INSERT INTO bed VALUES(3,230,400,"3000 Landerholm Cir SE",'a',7);  -- 2b 4p aval   
+INSERT INTO bed VALUES(3,230,400,"3000 Landerholm Cir SE",'a',7);  -- 2b 4p aval
 INSERT INTO bed VALUES(4,230,400,"3000 Landerholm Cir SE",'a',7);  -- 2b 4p aval   same room
 
 
@@ -224,43 +227,215 @@ INSERT INTO personVerification VALUES(140000000,"PeaceK");
 INSERT INTO personVerification VALUES(150000000,"General");
 INSERT INTO personVerification VALUES(444444444,"Admin");
 INSERT INTO personVerification VALUES(666666666,"Supervis");
+INSERT INTO personVerification VALUES(160000000,"zzzzzzzz");
+INSERT INTO personVerification VALUES(555555555,"Student");
 
 
 
 
-INSERT INTO application VALUES(1, 111111111, '2018-07-04', 'F', 'S', null); -- m moved in
-INSERT INTO application VALUES(2, 222222222, '2017-12-30', 'F', 'S', null); -- m moved in
-INSERT INTO application VALUES(3, 333333333, '2018-09-10', 'F', 'W', null); -- m moved in
-INSERT INTO application VALUES(4, 777777777, '2018-08-13', 'F', 'S', null); -- f moved in
-INSERT INTO application VALUES(5, 888888888, '2018-10-13', 'W', 'S', null); -- f moved in
-INSERT INTO application VALUES(6, 999999999, '2018-11-01', 'W', 'W', null); -- f moved in
-INSERT INTO application VALUES(7, 100000000, '2018-11-10', 'W', 'W', null); -- f moved in
-INSERT INTO application VALUES(8, 110000000, '2018-11-10', 'W', 'W', null); -- f moved in
-INSERT INTO application VALUES(9, 120000000, '2018-12-01', 'W', 'S', null); -- m moved in
-INSERT INTO application VALUES(10, 130000000, '2018-12-10', 'S', 'S', null); -- f moved in
-INSERT INTO application VALUES(11, 140000000, '2019-01-01', 'W', 'S', null); -- m moved in
-INSERT INTO application VALUES(12, 150000000, '2019-01-10', 'S', 'S', null); -- m moved in
+INSERT INTO application VALUES(3, 111111111, '2018-09-04', 'F', 'S', 777777777, 'A'); -- m moved in
+INSERT INTO application VALUES(1, 222222222, '2017-08-30', 'F', 'S', null, 'L'); -- m moved in         past
+INSERT INTO application VALUES(4, 333333333, '2018-09-10', 'F', 'W', null, 'L'); -- m moved in
+INSERT INTO application VALUES(5, 777777777, '2018-09-13', 'F', 'S', 111111111, 'A'); -- f moved in
+INSERT INTO application VALUES(6, 888888888, '2018-10-13', 'W', 'S', null, 'L'); -- f moved in
+INSERT INTO application VALUES(7, 999999999, '2018-11-01', 'W', 'W', null, 'L'); -- f moved in
+INSERT INTO application VALUES(8, 100000000, '2018-11-10', 'W', 'W', null, 'L'); -- f moved in
+INSERT INTO application VALUES(9, 110000000, '2018-11-10', 'W', 'W', null, 'L'); -- f moved in
+INSERT INTO application VALUES(10, 120000000, '2018-11-01', 'W', 'S', null, 'A'); -- m moved in
+INSERT INTO application VALUES(11, 130000000, '2018-11-20', 'S', 'S', null, 'L'); -- f moved in
+INSERT INTO application VALUES(13, 140000000, '2019-11-20', 'W', 'S', null, 'L'); -- m moved in
+INSERT INTO application VALUES(14, 150000000, '2019-11-20', 'S', 'S', null, 'L'); -- m moved in
+INSERT INTO application VALUES(12, 222222222, '2018-11-20', 'W', 'S', null, 'L'); -- m moved in
+INSERT INTO application VALUES(2, 555555555, '2018-08-30', 'F', 'S', null, 'L'); -- m moved in
 
 
-INSERT INTO lease VALUES(1, 1, '2018-09-03', '2019-06-15', 14001.00, 1, 310);
+
+INSERT INTO application_preference VALUES(3, 1);
+INSERT INTO application_preference VALUES(3, 4);
+INSERT INTO application_preference VALUES(3, 6);
+INSERT INTO application_preference VALUES(5, 1);
+INSERT INTO application_preference VALUES(5, 4);
+INSERT INTO application_preference VALUES(5, 6);
+INSERT INTO application_preference VALUES(10, 3);
+INSERT INTO application_preference VALUES(10, 5);
+INSERT INTO application_preference VALUES(10, 8);
+
+
+INSERT INTO lease VALUES(1, 1, '2017-09-03', '2018-06-15', 14001.00, 1, 310);
 INSERT INTO lease VALUES(2, 2, '2018-09-03', '2019-06-15', 11001.00, 1, 520);
-INSERT INTO lease VALUES(3, 4, '2018-09-03', '2019-06-15', 11001.00, 1, 320);
-INSERT INTO lease VALUES(4, 3, '2018-09-03', '2019-03-15', 7000.00, 1, 400);
-INSERT INTO lease VALUES(5, 5, '2019-01-03', '2019-06-15', 7000.00, 1, 500);
-INSERT INTO lease VALUES(6, 6, '2019-01-03', '2019-03-15', 3500.00, 3, 130); 
-INSERT INTO lease VALUES(7, 9, '2019-01-03', '2019-06-15', 5000.00, 2, 410); 
-INSERT INTO lease VALUES(8, 7, '2019-01-03', '2019-03-15', 2500.00, 1, 510); 
-INSERT INTO lease VALUES(9, 11, '2019-01-03', '2019-06-15', 5000.00, 3, 220); 
-INSERT INTO lease VALUES(10, 8, '2019-01-03', '2019-03-15', 2500.00, 3, 140); 
-INSERT INTO lease VALUES(11, 10, '2019-04-03', '2019-06-15', 3334.00, 1, 230); 
-INSERT INTO lease VALUES(12, 12, '2019-04-03', '2019-06-15', 4000.00, 1, 300);
+INSERT INTO lease VALUES(3, 4, '2018-09-03', '2019-03-15', 9334.00, 1, 310);
+INSERT INTO lease VALUES(4, 6, '2019-01-03', '2019-06-15', 7334.00, 1, 320);
+INSERT INTO lease VALUES(5, 7, '2019-01-03', '2019-03-15', 3500.00, 1, 500);
+INSERT INTO lease VALUES(6, 12, '2019-01-03', '2019-06-15', 5000.00, 2, 410);
+INSERT INTO lease VALUES(7, 8, '2019-01-03', '2019-03-15', 3500.00, 3, 130);
+INSERT INTO lease VALUES(8, 9, '2019-01-03', '2019-03-15', 2500.00, 1, 510);
+INSERT INTO lease VALUES(9, 11, '2019-04-03', '2019-06-15', 3334.00, 1, 230);
+INSERT INTO lease VALUES(10, 13, '2019-01-03', '2019-06-15', 8000.00, 1, 300);
+INSERT INTO lease VALUES(11, 14, '2019-04-03', '2019-06-15', 2500.00, 3, 220);
 
 
-INSERT INTO maintenanceRequest VALUES(1, 1, 'Grace Hopper', 'Kitchen lights burnt out', '2018-10-03', null);
-INSERT INTO maintenanceRequest VALUES(2, 4, 'Grace Hopper', 'Sink clogged', '2018-11-04', '2018-11-05'); 
-INSERT INTO maintenanceRequest VALUES(3, 8, 'Grace Hopper', 'Microwave no longer works', '2018-09-29', '2018-10-01'); 
- 
- 
+-- need to check
+INSERT INTO maintenanceRequest VALUES(1, 2, 'Grace Hopper', 'Kitchen lights burnt out', '2018-10-03', null);
+INSERT INTO maintenanceRequest VALUES(2, 4, 'Grace Hopper', 'Sink clogged', '2018-11-04', '2018-11-05');
+INSERT INTO maintenanceRequest VALUES(3, 2, 'Grace Hopper', 'Sink clogged', '2018-11-03', null);
+INSERT INTO maintenanceRequest VALUES(4, 1, 'Grace Hopper', 'Microwave no longer works', '2017-11-29', '2018-12-04');
+
+
+DELIMITER //
+
+-- DROP PROCEDURE IF EXISTS getActiveStudentApplication;
+
+CREATE PROCEDURE getActiveStudentApplication (IN studentId integer(9))
+BEGIN
+    SELECT appl_num, appl_date, start_quarter, end_quarter, pref_sid
+    FROM application
+    WHERE sid = studentId AND
+          status = 'A'
+	LIMIT 1;
+END
+
+DELIMITER ;
+
+
+DELIMITER //
+
+-- DROP PROCEDURE IF EXISTS getApplicationPreferences;
+
+CREATE PROCEDURE getApplicationPreferences (IN applNum integer(9))
+BEGIN
+    SELECT bd_id
+    FROM application_preference
+    WHERE appl_num = applNum
+	LIMIT 3;
+END
+
+DELIMITER ;
+
+DELIMITER //
+
+-- DROP PROCEDURE IF EXISTS getActiveStudentLease;
+
+CREATE PROCEDURE getActiveStudentLease (IN studentId integer(9))
+BEGIN
+    SELECT lid, lease.appl_num, lease.start_date, lease.end_date, cost, bed_num, unit_num
+    FROM lease, application
+    WHERE application.sid = studentId AND
+		  lease.appl_num = application.appl_num AND
+          lease.end_date > CURDATE()
+	LIMIT 1;
+END
+
+DELIMITER ;
+
+-- CALL getActiveStudentLease (555555555);  -- for check
+
+DELIMITER //
+
+--  DROP PROCEDURE IF EXISTS getActiveRequests;
+
+CREATE PROCEDURE getActiveRequests (IN studentId integer(9))
+BEGIN
+    SELECT rid, description, date_sent
+    FROM maintenanceRequest, lease, application
+    WHERE application.sid = studentId AND
+		  lease.appl_num = application.appl_num AND
+          lease.lid = maintenanceRequest.lid AND
+          date_resolv IS NULL;
+END
+
+DELIMITER ;
+
+DELIMITER //
+
+--  DROP PROCEDURE IF EXISTS updateCurrentApplication;
+
+CREATE PROCEDURE updateCurrentApplication (IN applNum integer(9),
+				 startQ varchar(1), endQ varchar(1), prefSid integer(9), INOUT upload bool)
+BEGIN
+    -- Update
+    UPDATE application
+    SET appl_date = CURDATE(),  start_quarter = startQ, end_quarter = endQ, pref_sid = prefSid
+    WHERE appl_num = applNum;
+    -- return
+    set upload = true;
+END
+
+DELIMITER ;
+
+
+DELIMITER //
+
+--  DROP PROCEDURE IF EXISTS updateCurrentApplicationPrefer;
+
+CREATE PROCEDURE updateCurrentApplicationPrefer (IN applNum integer(9), firstPr integer(2),
+				 secondPr integer(2), thirdPr integer(2), INOUT upload bool)
+BEGIN
+    -- delete
+    DELETE FROM application_preference
+    WHERE appl_num = applNum;
+
+    -- insert
+    INSERT INTO application_preference VALUES (applNum, firstPr);
+    IF (firstPr != secondPr)
+    THEN INSERT INTO application_preference VALUES (applNum, secondPr);
+    END IF;
+    IF (firstPr != thirdPr AND secondPr != thirdPr)
+    THEN INSERT INTO application_preference VALUES (applNum, thirdPr);
+    END IF;
+
+    -- return
+    set upload = true;
+END
+
+DELIMITER ;
+
+DELIMITER //
+
+--  DROP PROCEDURE IF EXISTS cancelCurrentApplication;
+
+CREATE PROCEDURE cancelCurrentApplication(IN applNum integer(9), INOUT upload bool)
+BEGIN
+    -- Update
+    UPDATE application
+    SET status = 'C'
+    WHERE appl_num = applNum;
+    -- return
+    set upload = true;
+END
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+-- DROP PROCEDURE IF EXISTS createNewApplication;
+
+CREATE PROCEDURE createNewApplication(IN sId integer(9),
+				 startQ varchar(1), endQ varchar(1), prefSid integer(9), OUT num integer)
+BEGIN
+    -- insert
+    INSERT INTO application (sid, appl_date, start_quarter, end_quarter, pref_sid, status)
+    VALUES (sId, CURDATE(), startQ, endQ, prefSid, 'A');
+
+    -- return
+    SELECT appl_num INTO num
+    FROM application
+    WHERE appl_num = LAST_INSERT_ID();
+END
+
+DELIMITER ;
+
+CREATE PROCEDURE getVacantUnits(IN quarterDate)
+BEGIN
+  SELECT unit_num, bed_num, end_date
+  FROM lease
+  WHERE end_date >= quarterDate;
+END
+
+
+
+
 DROP TABLE maintenanceRequest;
 DROP TABLE lease;
 DROP TABLE bed;
